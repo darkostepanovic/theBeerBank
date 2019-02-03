@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce'
 import { connect } from 'react-redux'
 import { getBeers, handleSearchInput } from '../../../actions'
 
-import { StyledInput, InputWrapper } from "../styled";
+import { StyledInput, StyledLink, InputWrapper } from "../styled";
 
 class Search extends Component {
     constructor(props) {
@@ -21,6 +21,7 @@ class Search extends Component {
         return (
             <InputWrapper>
                 <StyledInput type="text" placeholder="Search for beer here" value={this.props.term} onChange={this.handleSearchInput}/>
+                <StyledLink to="/advanced-search">Advanced Search</StyledLink>
             </InputWrapper>
         );
     }

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { rem } from 'polished'
+import { Link } from 'react-router-dom'
 
 export const StyledHeader = styled.header`
   background-color: ${p => p.theme.colors.primary};
@@ -50,3 +51,8 @@ export const StyledInput = styled.input`
     width: 700px;
   }
 `;
+
+export const StyledLink = styled(Link)`
+  flex: 0 0 100%;
+  text-align: center;
+`

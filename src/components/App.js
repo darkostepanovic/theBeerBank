@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import Home from './Home'
 import Favorites from './Favorites'
+import AdvancedSearch from './AdvancedSearch'
 import NotFound from './404'
 import Modal from './Modal'
 import BeerDetailsModal from './Modal/BeerDetailsModal'
@@ -21,6 +22,7 @@ class App extends Component {
             <Switch>
                 <Route exact path="/" component={Home}/>
                 <Route exact path="/favorites" component={Favorites}/>
+                <Route exact path="/advanced-search" component={AdvancedSearch}/>
                 <Route path="*" component={NotFound}/>
             </Switch>
         </>
