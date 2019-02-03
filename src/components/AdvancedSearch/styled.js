@@ -15,8 +15,13 @@ export const FormItemWrapper = styled.div`
   }
 `;
 
+export const SelectItemWrapper = styled(FormItemWrapper)`
+  flex-direction: column;
+  justify-content: flex-start;
+`
+
 export const StyledForm = styled.form`
-  margin-top: ${rem('40px')};
+  margin: ${rem('40px')} ${rem('60px')};
 `
 
 export const Button = styled.button`

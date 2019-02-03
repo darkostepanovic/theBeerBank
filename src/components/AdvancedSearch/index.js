@@ -1,12 +1,17 @@
+import 'react-date-range/dist/styles.css'; // main style file for date range
+import 'react-date-range/dist/theme/default.css'; // theme css file date range
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { Grid, Row, Col } from 'react-styled-flexboxgrid';
+import { Calendar } from 'react-date-range';
 import axios from '../../axios'
+
 import attributes from './config';
 
 import Header from '../Header'
 import BeerCard from '../Home/BeerCard'
-import { FormItemWrapper, StyledForm, Button } from "./styled";
+import { FormItemWrapper, SelectItemWrapper, StyledForm, Button } from "./styled";
 import { LoadingWrapper, SpinnerIcon} from "../Favorites/styled";
 
 class AdvancedSearch extends Component {
@@ -17,6 +22,8 @@ class AdvancedSearch extends Component {
         abv_gt: '',
         ebc_lt: '',
         ebc_gt: '',
+        brewed_before: new Date(),
+        brewed_after: new Date(),
         loading: false,
         showResults: false,
         beers: [],
@@ -25,19 +32,55 @@ class AdvancedSearch extends Component {
     handleFormInput = e => {
         this.setState({ [e.target.name]: e.target.value });
     };
-    handleFormSubmit = (e) => {
-        this.setState({ loading: true });
-        e.preventDefault();
+    handleParams = () => {
+        const rangeBefore = moment(this.state.brewed_before).format('MM-YYYY');
+        const rangeAfter = moment(this.state.brewed_after).format('MM-YYYY');
+        const today = moment().format('MM-YYYY');
         const params = {
             ...this.state
         };
-        Object.keys(params).forEach(key => params[key] === '' || key === 'loading' || key === 'beers' || key === 'error' || key === 'showResults' ? delete params[key] : '');
+        let query = {};
+
+        Object.keys(params).forEach(key => params[key] === '' ||
+        key === 'loading' ||
+        key === 'beers' ||
+        key === 'error' ||
+        key === 'brewed_before' ||
+        key === 'brewed_after' ||
+        key === 'showResults' ?
+            delete params[key] : '');
+
+        if(rangeBefore !== today) {
+            if(rangeAfter !== today) {
+                query = {...params, brewed_before: rangeBefore, brewed_after: rangeAfter}
+            } else {
+                query = {...params, brewed_before: rangeBefore}
+            }
+        } else if (rangeAfter !== today) {
+            query = {...params, brewed_after: rangeAfter}
+        } else {
+            query = {...params}
+        }
+
+        return query;
+    };
+    handleFormSubmit = (e) => {
+        e.preventDefault();
+        this.setState({ loading: true });
+        const params = this.handleParams();
         axios.get('/beers', {params})
             .then(res => {
-                this.setState({ beers: res.data, loading: false, showResults: true})
+                this.setState({
+                    beers: res.data,
+                    loading: false,
+                    showResults: true
+                })
             })
             .catch(err => {
-                this.setState({ error: err.message, loading: false })
+                this.setState({
+                    error: err.message,
+                    loading: false
+                })
             })
     };
     handleAttributesMap = () => {
@@ -67,6 +110,12 @@ class AdvancedSearch extends Component {
             )
         });
     };
+    handleSelectAfter = (date) => {
+        this.setState({ brewed_after: date})
+    };
+    handleSelectBefore = (date) => {
+        this.setState({ brewed_before: date})
+    };
     render() {
         const attr = this.handleAttributesMap();
         const beerCards = this.handleBeerCardsMap();
@@ -80,6 +129,30 @@ class AdvancedSearch extends Component {
                         <Grid>
                             <Row>
                                 {attr}
+                                <Col xs={12} md={6} lg={6}>
+                                    <SelectItemWrapper>
+                                        <label htmlFor="brewed_after">Brewing after</label>
+                                        <Calendar
+                                            id="brewed_after"
+                                            name="brewed_after"
+                                            maxDate={new Date()}
+                                            date={this.state.brewed_after}
+                                            onChange={this.handleSelectAfter}
+                                        />
+                                    </SelectItemWrapper>
+                                </Col>
+                                <Col xs={12} md={6} lg={6}>
+                                    <SelectItemWrapper>
+                                        <label htmlFor="brewed_before">Brewing before</label>
+                                        <Calendar
+                                            id="brewed_before"
+                                            name="brewed_before"
+                                            maxDate={new Date()}
+                                            date={this.state.brewed_before}
+                                            onChange={this.handleSelectBefore}
+                                        />
+                                    </SelectItemWrapper>
+                                </Col>
                             </Row>
                             <Row>
                                 <Col xs={12} md={12} lg={12}>
