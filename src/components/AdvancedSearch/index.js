@@ -22,8 +22,8 @@ class AdvancedSearch extends Component {
         abv_gt: '',
         ebc_lt: '',
         ebc_gt: '',
-        brewed_before: new Date(),
-        brewed_after: new Date(),
+        brewed_before: null,
+        brewed_after: null,
         loading: false,
         showResults: false,
         beers: [],
@@ -33,9 +33,8 @@ class AdvancedSearch extends Component {
         this.setState({ [e.target.name]: e.target.value });
     };
     handleParams = () => {
-        const rangeBefore = moment(this.state.brewed_before).format('MM-YYYY');
-        const rangeAfter = moment(this.state.brewed_after).format('MM-YYYY');
-        const today = moment().format('MM-YYYY');
+        const rangeBefore = this.state.brewed_before !== null ? moment(this.state.brewed_before).format('MM-YYYY') : false;
+        const rangeAfter = this.state.brewed_after !== null ? moment(this.state.brewed_after).format('MM-YYYY') : false;
         const params = {
             ...this.state
         };
@@ -50,13 +49,13 @@ class AdvancedSearch extends Component {
         key === 'showResults' ?
             delete params[key] : '');
 
-        if(rangeBefore !== today) {
-            if(rangeAfter !== today) {
+        if(rangeBefore) {
+            if(rangeAfter) {
                 query = {...params, brewed_before: rangeBefore, brewed_after: rangeAfter}
             } else {
                 query = {...params, brewed_before: rangeBefore}
             }
-        } else if (rangeAfter !== today) {
+        } else if (rangeAfter) {
             query = {...params, brewed_after: rangeAfter}
         } else {
             query = {...params}
